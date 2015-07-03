@@ -96,6 +96,12 @@
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
+
+    var failed = function(input) {
+      return !test(input) ? true : false;
+    };
+
+    return _.filter(collection, failed);
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
   };
