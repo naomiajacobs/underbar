@@ -121,7 +121,22 @@
   _.uniq = function(array, isSorted, iterator) {
     var unique = [];
 
-    var notDuplicate = function(value, key, collection) {
+    if (isSorted === true) {
+      //add first one to get started
+      unique.push(array[0]);
+
+      var notDupSorted = function(value, key, collection) {
+
+        //if current array value is unique as determined by the iterator
+        if (value === iterator(_.last(unique))) {
+          unique.push(collection[key]);
+        }
+      };
+
+      _.each(array, notDupSorted);
+
+    } else {
+      var notDuplicate = function(value, key, collection) {
 
       //start assuming not a dup
       var dup = false;
@@ -142,6 +157,7 @@
     };
 
     _.each(array, notDuplicate);
+  }
 
     return unique;
 
