@@ -128,6 +128,7 @@
       var notDupSorted = function(value, key, collection) {
 
         //if current array value is unique as determined by the iterator
+        //can I assume the iterator operates on the last thing added?
         if (value === iterator(_.last(unique))) {
           unique.push(collection[key]);
         }
