@@ -53,15 +53,22 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
+    
+    //handles arrays in order
     if (Array.isArray(collection)) {
+
       for (var i = 0; i < collection.length; i++) {
         iterator(collection[i], i, collection);
       }
+
+      //else handles object by key
     } else {
+
       for (var prop in collection) {
         iterator(collection[prop], prop, collection);
       }
     }
+
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -86,9 +93,11 @@
     var filtered = [];
 
     _.each(collection, function(item, index) {
+
       if (test(item)) {
         filtered.push(collection[index]);
       }
+
     });
 
     return filtered;
@@ -97,17 +106,45 @@
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
 
+    // TIP: see if you can re-use _.filter() here, without simply
+    // copying code in and modifying it
     var failed = function(input) {
+      
+      //returns true if test fails
       return !test(input) ? true : false;
     };
 
     return _.filter(collection, failed);
-    // TIP: see if you can re-use _.filter() here, without simply
-    // copying code in and modifying it
   };
 
   // Produce a duplicate-free version of the array.
-  _.uniq = function(array) {
+  _.uniq = function(array, isSorted, iterator) {
+    var unique = [];
+
+    var notDuplicate = function(value, key, collection) {
+
+      //start assuming not a dup
+      var dup = false;
+
+      //compares input to what has already been added to unique
+      for (var i=0; i < unique.length; i++) {
+        
+        //checks if current value matches any already added
+        if (unique[i] === value) {
+          dup = true;
+        }
+      }
+      
+      //if not, adds it to unique
+      if (dup === false) {
+        unique.push(collection[key]);
+      }
+    };
+
+    _.each(array, notDuplicate);
+
+    return unique;
+
   };
 
 
