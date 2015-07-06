@@ -172,6 +172,7 @@
     // the members, it also maintains an array of results.
     var mappedArray = [];
 
+    //applies iterator on each item in collection, then pushes to new array
     _.each(collection, function(value) {
       mappedArray.push(iterator(value));
     });
@@ -245,12 +246,32 @@
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
-    return _.reduce(collection, function(wasFound, item) {
-      if (wasFound) {
-        return true;
+    if (Array.isArray(collection)) {
+      return _.reduce(collection, function(wasFound, item) {
+        
+        if (wasFound) {
+         return true;
+        }
+        
+        return item === target;
+      }, false);
+
+    } else {
+
+      var wasFound = false;
+      var prop;
+
+      for (prop in collection) {
+        
+        if (collection[prop] === target) {
+          
+          wasFound = true;
+          return wasFound;
+        }
       }
-      return item === target;
-    }, false);
+
+      return wasFound;
+    }
   };
 
 
