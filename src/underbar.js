@@ -382,6 +382,21 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+
+    var add = function(value, key) {
+      
+      //only add if obj doesn't already have key
+      if (!(key in obj)) {
+        obj[key] = value;
+      }
+    };
+
+    for (var i = 1; i < arguments.length; i++) {
+      _.each(arguments[i], add);
+    }
+
+    return obj;
+
   };
 
 
