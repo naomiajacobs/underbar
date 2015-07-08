@@ -315,6 +315,35 @@
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    
+    //returns false for empty collection
+    if (collection.length === 0) {
+      return false;
+    
+    //works for no callback
+    } else if (iterator === undefined) {
+      
+      var passed = false;
+
+      var passes = function(value) {
+        if (value) {
+          passed = true;
+        }
+      };
+
+      _.each(collection, passes);
+
+      return passed;
+
+    //if every item fails iterator, then some returns false
+    } else {
+      
+      var none = function(item) {
+        return !iterator(item) ? true : false;
+      };
+
+      return _.every(collection, none) ? false : true;
+    }
   };
 
 
