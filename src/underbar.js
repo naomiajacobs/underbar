@@ -422,7 +422,7 @@
     return function() {
       if (!alreadyCalled) {
         // TIP: .apply(this, arguments) is the standard way to pass on all of the
-        // infromation from one function call to another.
+        // information from one function call to another.
         result = func.apply(this, arguments);
         alreadyCalled = true;
       }
@@ -440,6 +440,49 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+
+    var prevArgs = [];
+
+    var result;
+
+    //fn to check if argument has been passed in before
+    //if so, makes new result the previous result
+    var alreadyPassed = function(thisArg) {
+      var wasFound = false;
+      
+      _.each(prevArgs, function(item, key, collection) {
+        
+        if (collection[key][0] === thisArg) {
+          
+          result = prevArgs[key][1];
+          wasFound = true;
+        }
+      });
+
+      return wasFound;
+    };
+
+    return function(arg1) {
+
+      //calls thisOnePassed on given argument
+      var thisOnePassed = alreadyPassed(arg1);
+
+      //if argument was already passed, returns old result
+      if (thisOnePassed) {
+        
+        return result;
+      
+      //else, runs func on new arg, pushes that to prevArgs, and returns result
+      } else {
+        
+        result = func.apply(this, arguments);
+        prevArgs.push([arg1, result]);
+        console.log(prevArgs);
+        return result;
+      }
+
+    };
+
   };
 
   // Delays a function for the given number of milliseconds, and then calls
