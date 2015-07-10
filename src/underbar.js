@@ -493,7 +493,7 @@
   _.delay = function(func, wait) {
 
     setTimeout.apply(this, arguments);
-    
+
   };
 
 
@@ -508,6 +508,28 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    
+    //makes copy of array
+    var arrayCopy = array.slice();
+
+    //makes target array
+    var newArray = [];
+
+    
+    //until newArray has all the elements it needs
+    while (newArray.length < array.length) {
+      
+      //pick a random element from array
+      var random = Math.floor(Math.random()*arrayCopy.length);
+      
+      //splice it from old
+      var next = arrayCopy.splice(random, 1)[0];
+      
+      //add it to new
+      newArray.push(next);
+    }
+    
+    return newArray;
   };
 
 
