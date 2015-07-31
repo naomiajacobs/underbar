@@ -510,19 +510,42 @@
     //makes target array
     var newArray = [];
 
+    var randomize = function() {
     
-    //until newArray has all the elements it needs
-    while (newArray.length < array.length) {
-      
-      //pick a random element from array
-      var random = Math.floor(Math.random()*arrayCopy.length);
-      
-      //splice it from old
-      var next = arrayCopy.splice(random, 1)[0];
-      
-      //add it to new
-      newArray.push(next);
-    }
+      //until newArray has all the elements it needs
+      while (newArray.length < array.length) {
+        
+        //pick a random element from array
+        var random = Math.floor(Math.random()*arrayCopy.length);
+        console.log('Random is ' + random);
+        
+        //splice it from old
+        var next = arrayCopy.splice(random, 1)[0];
+        
+        //add it to new
+        newArray.push(next);
+        console.log('NewArray is ' + newArray);
+      }
+
+    };
+
+    randomize();
+
+    var checkIfNewOrder = function() {
+
+      if (newArray.join(',') == array.join(',')) { //checks if same order
+
+        //resets arrayCopy and newArray
+        arrayCopy = array.slice();
+        newArray = [];
+
+        //tries again until newArray is in a different order than array
+        randomize();
+        checkIfNewOrder();
+      }
+    };
+
+    checkIfNewOrder();
     
     return newArray;
   };
@@ -539,6 +562,11 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+
+    _.each(collection, function(item) {
+      item = functionOrKey.apply(item, args);
+    });
+
   };
 
   // Sort the object's values by a criterion produced by an iterator.
