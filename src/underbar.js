@@ -517,14 +517,13 @@
         
         //pick a random element from array
         var random = Math.floor(Math.random()*arrayCopy.length);
-        console.log('Random is ' + random);
-        
+
         //splice it from old
         var next = arrayCopy.splice(random, 1)[0];
         
         //add it to new
         newArray.push(next);
-        console.log('NewArray is ' + newArray);
+
       }
 
     };
@@ -563,9 +562,13 @@
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
 
+    /*var newArray = [];
+
     _.each(collection, function(item) {
-      item = functionOrKey.apply(item, args);
+      newArray[key] = functionOrKey.apply(item, args);
     });
+
+    return newArray;*/
 
   };
 
@@ -582,6 +585,35 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+
+    //determines longest argument
+    var longestArgLength = 0;
+    var longestArg;
+
+    _.each(arguments, function(item, key) {
+      
+      if (item.length > longestArgLength) {
+        longestArgLength = item.length;
+        longestArg = item;
+      }
+    });
+
+    var newArray = [];
+
+    for (var i = 0; i < longestArgLength; i++) {
+
+      newArray[i] = [];
+
+      //for each arg, push its nth item to newArray's nth item
+      _.each(arguments, function(item, key) {
+
+        newArray[i].push(item[i]);
+
+      });
+    }
+
+    return newArray;
+
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
