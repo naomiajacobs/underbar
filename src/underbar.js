@@ -562,14 +562,24 @@
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
 
-    /*var newArray = [];
+    var result = [];
 
-    _.each(collection, function(item) {
-      newArray[key] = functionOrKey.apply(item, args);
-    });
+    //run if functionOrKey is a function
+    if (typeof functionOrKey === 'function') {
 
-    return newArray;*/
+      _.each(collection, function(item, key, collection) {
+        result.push(functionOrKey.apply(item, args));
+      });
 
+    //else run if functionOrKey is a key
+    } else {
+
+      _.each(collection, function(item, key, collection) {
+        result.push(item[functionOrKey]());
+      });
+    }
+
+    return result;
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -600,16 +610,16 @@
 
     var newArray = [];
 
+    var pushItem = function(item, key) {
+      newArray[i].push(item[i]);
+    };
+
     for (var i = 0; i < longestArgLength; i++) {
 
       newArray[i] = [];
 
       //for each arg, push its nth item to newArray's nth item
-      _.each(arguments, function(item, key) {
-
-        newArray[i].push(item[i]);
-
-      });
+      _.each(arguments, pushItem);
     }
 
     return newArray;
@@ -647,17 +657,18 @@
 
     var sharedItems = [];
 
-    //finds shortest argument
+    //finds shortest argument and sets it to shortestArg
     var shortestArg = arguments[0];
     var shortestArgIndex = 0;
-  
-    for (var i = 1; i < arguments.length; i++) {
-      if (arguments[i].length < shortestArg.length) {
-        shortestArg = arguments[i];
-        shortestArgIndex = i;
-      }
-    }
 
+    _.each(arguments, function(item, key) {
+      if (item.length < shortestArg.length) {
+        shortestArg = item;
+        shortestArgIndex = key;
+      }
+    });
+
+    //checks if item contains item in arguments[0]
     var doesContain = function(arg) {
       return _.contains(arg, shortestArg[j]);
     };
