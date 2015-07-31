@@ -54,21 +54,19 @@
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
     
-    //handles arrays in order
+    //handles arrays
     if (Array.isArray(collection)) {
 
       for (var i = 0; i < collection.length; i++) {
         iterator(collection[i], i, collection);
       }
 
-      //else handles object by key
+    //else handles objects
     } else {
-
       for (var prop in collection) {
         iterator(collection[prop], prop, collection);
       }
     }
-
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -94,10 +92,10 @@
 
     _.each(collection, function(item, index) {
 
-      if (test(item)) {
+      if (test(item)) { //if item passes test, add it to array
+
         filtered.push(collection[index]);
       }
-
     });
 
     return filtered;
@@ -119,40 +117,38 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+
     var unique = [];
 
+    //if sorted, compare to last item in array instead of whole array
     if (isSorted === true) {
+
       //add first one to get started
       unique.push(array[0]);
 
-      var notDupSorted = function(value, key, collection) {
-
-        //if current array value is unique as determined by the iterator
-        //can I assume the iterator operates on the last thing added?
+      var addNotDups = function(value, key, collection) {
         if (value === iterator(_.last(unique))) {
           unique.push(collection[key]);
         }
       };
 
-      _.each(array, notDupSorted);
+      _.each(array, addNotDups);
 
-    } else {
+    } else { //if not sorted, check against each item in array
+
       var notDuplicate = function(value, key, collection) {
 
       //start assuming not a dup
       var dup = false;
 
-      //compares input to what has already been added to unique
-      for (var i=0; i < unique.length; i++) {
-        
-        //checks if current value matches any already added
-        if (unique[i] === value) {
+      _.each(unique, function(item, key) {
+        if (item === value) {
           dup = true;
+          return;
         }
-      }
-      
-      //if not, adds it to unique
-      if (dup === false) {
+      });
+
+      if (dup === false) { //if not a duplicate, add to array
         unique.push(collection[key]);
       }
     };
@@ -161,7 +157,6 @@
   }
 
     return unique;
-
   };
 
 
@@ -223,18 +218,19 @@
     var reduced;
     var i;
 
-    if (collection.length < 2) {
+    if (collection.length < 2) { //if only one item, nothing to reduce
       return collection[0];
 
-    } else if (accumulator === undefined) {
+    } else if (accumulator === undefined) { //if no accum given, use first element and start at the second element
       reduced = collection[0];
       i = 1;
       
-    } else {
+    } else { //otherwise use the accumulator given and start at first element
       reduced = accumulator;
       i = 0;
     }
 
+    //can't use each here since starting point is variable
     for (i; i < collection.length; i++) {
       reduced = iterator(reduced, collection[i]);
     }
@@ -282,7 +278,7 @@
     if (collection.length === 0) {
       return true;
     
-    //handles case of one array since reduce handles that case differently
+    //handles case of one item since reduce handles that differently
     } else if (collection.length === 1) {
       if (iterator(collection[0])) {
         return true;
@@ -452,7 +448,7 @@
       
       _.each(prevArgs, function(item, key, collection) {
         
-        if (collection[key][0] === thisArg) {
+        if (item[0] === thisArg) {
           
           result = prevArgs[key][1];
           wasFound = true;
@@ -462,10 +458,10 @@
       return wasFound;
     };
 
-    return function(arg1) {
+    return function(arg) {
 
-      //calls thisOnePassed on given argument
-      var thisOnePassed = alreadyPassed(arg1);
+      //calls alreadyPassed on given argument
+      var thisOnePassed = alreadyPassed(arg);
 
       //if argument was already passed, returns old result
       if (thisOnePassed) {
@@ -476,10 +472,9 @@
       } else {
         
         result = func.apply(this, arguments);
-        prevArgs.push([arg1, result]);
+        prevArgs.push([arg, result]);
         return result;
       }
-
     };
 
   };
