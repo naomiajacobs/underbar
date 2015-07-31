@@ -644,6 +644,36 @@
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+
+    var sharedItems = [];
+
+    //finds shortest argument
+    var shortestArg = arguments[0];
+    var shortestArgIndex = 0;
+  
+    for (var i = 1; i < arguments.length; i++) {
+      if (arguments[i].length < shortestArg.length) {
+        shortestArg = arguments[i];
+        shortestArgIndex = i;
+      }
+    }
+
+    var doesContain = function(arg) {
+      return _.contains(arg, shortestArg[j]);
+    };
+
+    //checks remaining arguments against shortest argument
+    for (var j = 0; j < shortestArg.length; j++) {
+
+      //if every other argument contains the item in the shortest argument, push to sharedItems
+      var shared = _.every(arguments, doesContain);
+
+      if (shared) {
+        sharedItems.push(shortestArg[j]);
+      }
+    }
+    
+    return sharedItems;
   };
 
   // Take the difference between one array and a number of other arrays.
