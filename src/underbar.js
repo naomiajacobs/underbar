@@ -672,13 +672,45 @@
         sharedItems.push(shortestArg[j]);
       }
     }
-    
+
     return sharedItems;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+
+    var onlyInFirst = [];
+
+    //makes array of all arguments except first one
+    var otherArguments = [];
+
+    for (var i = 1; i < arguments.length; i++) {
+      otherArguments.push(arguments[i]);
+    }
+
+    //checks if each item in first arg is unique
+    for (var j = 0; j < arguments[0].length; j++) {
+
+      var unique = true;
+
+      for (var k = 0; k < otherArguments.length; k++) {
+
+        //if any other arg contains an item in the first arg, it's not unique
+        if (_.contains(otherArguments[k], arguments[0][j])) {
+
+          unique = false;
+        }
+      }
+
+      //if not in other args, push to final array
+      if (unique) {
+
+        onlyInFirst.push(arguments[0][j]);
+      }
+    }
+
+    return onlyInFirst;
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
