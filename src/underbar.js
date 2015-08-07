@@ -591,73 +591,82 @@
     var result = [];
 
     var arrayCopy = collection.slice();
+    console.log('Array copy: ' + arrayCopy);
 
     
-    //returns true if item1 should be sorted before item2
+    //returns true if item1 should be sorted before item2 (already sorted correctly)
     //returns false if item1 should be sorted after item2
     var compare = function(item1, item2) {
 
       //default wins if other is undefined
+      //preserves current order if both are undefined
       if (item2 === undefined) {
         return true;
 
       //sorts by iterater prop if iterator is a string
       } else if (typeof iterator === 'string') {
 
-        //returns true if the string comes first
+        //returns true if the item1 comes first
         return (item1[iterator] < item2[iterator] || item1[iterator] === item2[iterator]) ? true : false;
       
       //else sorts by result of iterator function
       } else {
 
-        //returns true if iterator(item1) is lower
-        console.log('Iterator(item1): ' + iterator[item1]);
-        console.log('Item1: ' + item1);
-        console.log('Iterator(item2): ' + iterator[item2]);
-        console.log('Item2: ' + item2);
-        return (iterator(item1) < iterator(item2) || iterator(item1) === iterator(item2)) ? true : false;
-      }
-    };
+        if (iterator(item2) === undefined) {
 
-    var sortItems = function(array) {
+          return true;
+          
+        } else {
 
-      if (arrayCopy.length === 0) {
-
-        //done sorting
-        return result;
-
-      } else {
-
-        //for each item in arrayCopy, see if it should be pushed next
-        for (var i = 0; i < arrayCopy.length; i++) {
-
-          //start assuming that item is first
-          var winning = true;
-
-          //compare to all items left in array to see if it's first
-          for (var j = 0; j < arrayCopy.length; j++) {
-
-            //set winning to false if it fails
-            //refactor to use some?
-            if (!compare(arrayCopy[i], arrayCopy[j])) {
-              winning = false;
-            }
-          }
-
-          console.log('Winning: ' + winning);
-
-          //if so, push it to result and start again on modified array
-          //if not, move on to next item
-          if (winning) {
-            result.push(arrayCopy.splice(i, 1)[0]); //splice returns array, use [0] to access item
-            sortItems(arrayCopy);
-          }
+          return (iterator(item1) < iterator(item2) || iterator(item1) === iterator(item2)) ? true : false;
         }
       }
     };
 
+    //iterates through array, finds item that should come first, pushes it to new array
+    //repeats until all items are used
+    var sortItems = function(array) {
+
+      //done sorting
+      if (arrayCopy.length === 0) {
+
+        return result;
+
+      } else {
+
+        _.each(arrayCopy, function(value, key) {
+          //start assuming the item is first
+          var winning = true;
+
+          console.log('Now working on: ' + value);
+
+          //compare to all items left in array to see if it's first
+          for (var j = 0; j < arrayCopy.length; j++) {
+
+            //skip if item is compared to itself
+            if (value === arrayCopy[j]) {
+              continue;
+
+            //set winning to false if it fails and break since it's not the first
+            //refactor to use some? - wouldn't be able to take advantage of break
+            } else if (!compare(value, arrayCopy[j])) {
+              winning = false;
+              break;
+            }
+          }
+
+          //if it's first, push it to result and start again on modified array
+          //if not, move on to next item
+          if (winning) {
+            result.push(arrayCopy.splice(key, 1)[0]);
+            sortItems(arrayCopy);
+          }
+        });
+      }
+    };
+
     sortItems(arrayCopy);
-    console.log(result);
+    console.log('Result: ' + result);
     return result;
   };
 
