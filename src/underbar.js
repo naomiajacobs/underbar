@@ -591,8 +591,6 @@
     var result = [];
 
     var arrayCopy = collection.slice();
-    console.log('Array copy: ' + arrayCopy);
-
     
     //returns true if item1 should be sorted before item2 (already sorted correctly)
     //returns false if item1 should be sorted after item2
@@ -615,7 +613,7 @@
         if (iterator(item2) === undefined) {
 
           return true;
-          
+
         } else {
 
           return (iterator(item1) < iterator(item2) || iterator(item1) === iterator(item2)) ? true : false;
@@ -637,8 +635,6 @@
         _.each(arrayCopy, function(value, key) {
           //start assuming the item is first
           var winning = true;
-
-          console.log('Now working on: ' + value);
 
           //compare to all items left in array to see if it's first
           for (var j = 0; j < arrayCopy.length; j++) {
@@ -666,7 +662,6 @@
     };
 
     sortItems(arrayCopy);
-    console.log('Result: ' + result);
     return result;
   };
 
