@@ -252,19 +252,11 @@
   // provided, provide a default one
   _.some = function(collection, iterator) {
 
-    if (collection.length === 0) {
-      return false;
+    return !!_.reduce(collection, function(allPass, item) {
 
-    } else {
+      return allPass || (iterator === undefined ? item : iterator(item));
 
-      if (iterator === undefined) { iterator = _.identity; }
-    
-      var doesntPass = function(item) {
-        return !iterator(item) ? true : false;
-      };
-
-      return !!(_.every(collection, doesntPass) ? false : true);
-    }
+    }, false);
 
   };
 
@@ -289,7 +281,17 @@
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
 
-    var add = function(value, key) {
+    _.each(arguments, function(item, key) {
+
+        _.each(item, function(value, key) {
+
+          obj[key] = value;
+        });
+    });
+
+    return obj;
+
+    /*var add = function(value, key) {
       obj[key] = value;
     };
 
@@ -298,7 +300,7 @@
       _.each(arguments[i], add);
     }
 
-    return obj;
+    return obj;*/
   };
 
   // Like extend, but doesn't ever overwrite a key that already
