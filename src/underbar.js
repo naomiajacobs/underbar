@@ -38,13 +38,7 @@
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
-    if (n === 0) {
-      return [];
-    } else if (n > array.length) {
-      return array;
-    } else {
-      return n === undefined ? array[array.length-1] : array.slice(n-1, array.length);
-    }
+    return n === undefined ? array[array.length-1] : array.splice(Math.max(0, array.length-n));
   };
 
   // Call iterator(value, key, collection) for each element of collection.
@@ -94,7 +88,7 @@
 
       if (test(item)) { //if item passes test, add it to array
 
-        filtered.push(collection[index]);
+        filtered.push(item);
       }
     });
 
@@ -118,45 +112,21 @@
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
 
-    var unique = [];
+    //use unique as intermediate for speed
+    var unique = {};
+    var results = [];
 
-    //if sorted, compare to last item in array instead of whole array
-    if (isSorted === true) {
+    _.each(array, function(item, key) {
+      unique[key] = item;
+    });
 
-      //add first one to get started
-      unique.push(array[0]);
-
-      var addNotDups = function(value, key, collection) {
-        if (value === iterator(_.last(unique))) {
-          unique.push(collection[key]);
-        }
-      };
-
-      _.each(array, addNotDups);
-
-    } else { //if not sorted, check against each item in array
-
-      var notDuplicate = function(value, key, collection) {
-
-      //start assuming not a dup
-      var dup = false;
-
-      _.each(unique, function(item, key) {
-        if (item === value) {
-          dup = true;
-          return;
-        }
-      });
-
-      if (dup === false) { //if not a duplicate, add to array
-        unique.push(collection[key]);
+    _.each(unique, function(item, key) {
+      if (_.indexOf(results, item) < 0) {
+        results.push(item);
       }
-    };
+    });
 
-    _.each(array, notDuplicate);
-  }
-
-    return unique;
+    return results;
   };
 
 
