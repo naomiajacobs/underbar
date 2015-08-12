@@ -220,9 +220,8 @@
     } else {
 
       var wasFound = false;
-      var prop;
 
-      for (prop in collection) {
+      for (var prop in collection) {
         
         if (collection[prop] === target) {
           
@@ -281,7 +280,7 @@
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
 
-    _.each(arguments, function(item, key) {
+    _.each(arguments, function(item) {
 
         _.each(item, function(value, key) {
 
@@ -290,34 +289,21 @@
     });
 
     return obj;
-
-    /*var add = function(value, key) {
-      obj[key] = value;
-    };
-
-    //starts at second arg since first is the obj
-    for (var i = 1; i < arguments.length; i++) {
-      _.each(arguments[i], add);
-    }
-
-    return obj;*/
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
 
-    var add = function(value, key) {
-      
-      //only add if obj doesn't already have key
-      if (!(key in obj)) {
-        obj[key] = value;
-      }
-    };
+    _.each(arguments, function(item) {
 
-    for (var i = 1; i < arguments.length; i++) {
-      _.each(arguments[i], add);
-    }
+      _.each(item, function(value, key) {
+
+        if (!(key in obj)) {
+          obj[key] = value;
+        }
+      });
+    });
 
     return obj;
 
@@ -365,45 +351,19 @@
   // instead if possible.
   _.memoize = function(func) {
 
-    var prevArgs = [];
-
-    var result;
-
-    //fn to check if argument has been passed in before
-    //if so, makes new result the previous result
-    var alreadyPassed = function(thisArg) {
-      var wasFound = false;
-      
-      _.each(prevArgs, function(item, key, collection) {
-        
-        if (item[0] === thisArg) {
-          
-          result = prevArgs[key][1];
-          wasFound = true;
-        }
-      });
-
-      return wasFound;
-    };
+    //obj to keep track of previous calls
+    var prevCalls = {};
 
     return function(arg) {
 
-      //calls alreadyPassed on given argument
-      var thisOnePassed = alreadyPassed(arg);
+      //if func hasn't been called with the arg yet, run func(arg)
+      if (!prevCalls[arg]) {
 
-      //if argument was already passed, returns old result
-      if (thisOnePassed) {
-        
-        return result;
-      
-      //else, runs func on new arg, pushes that to prevArgs, and returns result
-      } else {
-        
-        result = func.apply(this, arguments);
-        prevArgs.push([arg, result]);
-        return result;
+        prevCalls[arg] = func.apply(this, arguments);
       }
-    };
+
+      return prevCalls[arg];
+    }; 
 
   };
 
@@ -490,24 +450,11 @@
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
 
-    var result = [];
-
-    //run if functionOrKey is a function
-    if (typeof functionOrKey === 'function') {
-
-      _.each(collection, function(item, key, collection) {
-        result.push(functionOrKey.apply(item, args));
-      });
-
-    //else run if functionOrKey is a key
-    } else {
-
-      _.each(collection, function(item, key, collection) {
-        result.push(item[functionOrKey]());
-      });
-    }
-
-    return result;
+    return _.map(collection, function(item) {
+      
+      var method = typeof functionOrKey === 'function' ? functionOrKey : item[functionOrKey];
+      return method.apply(item, args);
+    });
   };
 
   // Sort the object's values by a criterion produced by an iterator.
