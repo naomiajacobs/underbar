@@ -185,27 +185,22 @@
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
 
-    var reduced;
-    var i;
+    var initializing = accumulator === undefined;
 
-    if (collection.length < 2) { //if only one item, nothing to reduce
-      return collection[0];
+    _.each(collection, function(item) {
 
-    } else if (accumulator === undefined) { //if no accum given, use first element and start at the second element
-      reduced = collection[0];
-      i = 1;
-      
-    } else { //otherwise use the accumulator given and start at first element
-      reduced = accumulator;
-      i = 0;
-    }
+      if (initializing) {
 
-    //can't use each here since starting point is variable
-    for (i; i < collection.length; i++) {
-      reduced = iterator(reduced, collection[i]);
-    }
+        accumulator = item;
+        initializing = false;
 
-    return reduced;
+      } else {
+
+        accumulator = iterator(accumulator, item);
+      }
+    });
+
+    return accumulator;
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -244,72 +239,33 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
-    //passes by default for empty collection
-    if (collection.length === 0) {
-      return true;
-    
-    //handles case of one item since reduce handles that differently
-    } else if (collection.length === 1) {
-      if (iterator(collection[0])) {
-        return true;
-      
-      } else {
-        return false;
-      }
 
-    } else {
-      return _.reduce(collection, function(allPass, item) {
+    return !!_.reduce(collection, function(allPass, item) {
 
-        //works when no callback is provided
-        if (iterator === undefined) {
-          if (!item) {
-            allPass = false;
-          }
-        
-        //works with iterator, returns false if any item fails iterator's test
-        } else if (!iterator(item)) {
-          allPass = false;
-        }
+      return allPass && (iterator === undefined ? item : iterator(item));
 
-        return allPass;
-      }, true);
-    }
+    }, true);
 
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
-    
-    //returns false for empty collection
+
     if (collection.length === 0) {
       return false;
-    
-    //works for no callback
-    } else if (iterator === undefined) {
-      
-      var passed = false;
 
-      var passes = function(value) {
-        if (value) {
-          passed = true;
-        }
-      };
-
-      _.each(collection, passes);
-
-      return passed;
-
-    //if every item fails iterator, then some returns false
     } else {
-      
-      var none = function(item) {
+
+      if (iterator === undefined) { iterator = _.identity; }
+    
+      var doesntPass = function(item) {
         return !iterator(item) ? true : false;
       };
 
-      return _.every(collection, none) ? false : true;
+      return !!(_.every(collection, doesntPass) ? false : true);
     }
+
   };
 
 
